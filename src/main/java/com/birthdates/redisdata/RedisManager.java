@@ -1,6 +1,8 @@
 package com.birthdates.redisdata;
 
 import com.birthdates.redisdata.redis.RedisImplementation;
+import com.google.gson.Gson;
+import lombok.Getter;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -12,10 +14,13 @@ public class RedisManager {
     private static RedisManager instance;
 
     private final JedisPool jedisPool;
+    @Getter
+    private final Gson gson;
 
     public RedisManager() {
         instance = this;
         jedisPool = new JedisPool(getPoolConfig());
+        gson = new Gson();
     }
 
     public static RedisManager getInstance() {
