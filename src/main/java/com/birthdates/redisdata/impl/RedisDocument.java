@@ -54,7 +54,7 @@ public abstract class RedisDocument {
             if (value == null) continue;
 
             Class<?> fieldType = field.getType();
-            if (value instanceof Enum<?>) {
+            if (fieldType.isEnum()) {
                 if (save) {
                     value = ((Enum<?>) value).name();
                 } else {
