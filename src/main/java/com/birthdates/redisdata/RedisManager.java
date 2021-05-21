@@ -26,6 +26,13 @@ public class RedisManager {
         gson = new Gson();
     }
 
+    public void destroy() {
+        for (RedisImplementation pooledImplementation : RedisImplementation.getPooledImplementations()) {
+            pooledImplementation.close();
+        }
+        jedisPool.destroy();
+    }
+
     public static void init() {
         if (instance != null) {
             throw new IllegalStateException("RedisManager already initialized!");
