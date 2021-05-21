@@ -17,6 +17,7 @@ public abstract Class<?> getType();
 ```
 The class comes with four data functions `save`, `load`, `delete` & `expire`. When you load a document you can check if it's new with `isNew()`
 
+You can serialize & deserialize specific fields differently by overriding `deserialize` & `serialize`
 # Maven
 ```xml
 <dependency>
