@@ -22,15 +22,8 @@ public class RedisManager {
     }
 
     public RedisManager(JedisPoolConfig poolConfig) {
-        jedisPool = new JedisPool(poolConfig == null ? getPoolConfig() : poolConfig);
+        jedisPool = new JedisPool(poolConfig == null ? defaultPoolConfig() : poolConfig);
         gson = new Gson();
-    }
-
-    public void destroy() {
-        for (RedisImplementation pooledImplementation : RedisImplementation.getPooledImplementations()) {
-            pooledImplementation.close();
-        }
-        jedisPool.destroy();
     }
 
     public static void init() {
@@ -47,6 +40,13 @@ public class RedisManager {
         return instance;
     }
 
+    public void destroy() {
+        for (RedisImplementation pooledImplementation : RedisImplementation.getPooledImplementations()) {
+            pooledImplementation.close();
+        }
+        jedisPool.destroy();
+    }
+
     public RedisImplementation getJedis() {
         Jedis jedis = jedisPool.getResource();
         if (jedis == null) {
@@ -55,7 +55,7 @@ public class RedisManager {
         return RedisImplementation.get(jedis);
     }
 
-    private JedisPoolConfig getPoolConfig() {
+    private JedisPoolConfig defaultPoolConfig() {
         final JedisPoolConfig poolConfig = new JedisPoolConfig();
         poolConfig.setMaxTotal(128);
         poolConfig.setMaxIdle(128);
