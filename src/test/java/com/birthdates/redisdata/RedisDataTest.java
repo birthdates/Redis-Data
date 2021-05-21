@@ -1,5 +1,6 @@
 package com.birthdates.redisdata;
 
+import com.birthdates.redisdata.data.RedisDataManager;
 import com.birthdates.redisdata.data.impl.RedisDocument;
 
 public class RedisDataTest {
@@ -7,9 +8,9 @@ public class RedisDataTest {
     public RedisDataTest() {
         RedisManager.init();
 
-        TestDocument testDocument = new TestDocument();
-        testDocument.load();
-        testDocument.save();
+        RedisDataManager<TestDocument> redisDataManager = new RedisDataManager<>();
+
+        redisDataManager.addData(new TestDocument());
     }
 
     private static class TestDocument extends RedisDocument {
