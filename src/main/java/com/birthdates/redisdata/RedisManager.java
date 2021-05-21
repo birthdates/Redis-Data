@@ -18,7 +18,11 @@ public class RedisManager {
     private final Gson gson;
 
     public RedisManager() {
-        jedisPool = new JedisPool(getPoolConfig());
+        this(null);
+    }
+
+    public RedisManager(JedisPoolConfig poolConfig) {
+        jedisPool = new JedisPool(poolConfig == null ? getPoolConfig() : poolConfig);
         gson = new Gson();
     }
 

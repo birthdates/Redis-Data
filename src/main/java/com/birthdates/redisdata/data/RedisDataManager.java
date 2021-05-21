@@ -9,7 +9,7 @@ import java.util.Map;
 public class RedisDataManager<V extends RedisDocument> {
 
     @Getter
-    private final Map<String,V> data = new HashMap<>();
+    private final Map<String, V> data = new HashMap<>();
 
     public void addData(V value) {
         addData(value, true);
@@ -17,7 +17,7 @@ public class RedisDataManager<V extends RedisDocument> {
 
     public void addData(V value, boolean load) {
         data.put(value.getId(), value);
-        if(load)
+        if (load)
             value.load();
     }
 
@@ -27,8 +27,8 @@ public class RedisDataManager<V extends RedisDocument> {
 
     public boolean removeData(String key, boolean save) {
         V value = data.remove(key);
-        if(value == null) return false;
-        if(save) {
+        if (value == null) return false;
+        if (save) {
             value.save();
         }
         return true;

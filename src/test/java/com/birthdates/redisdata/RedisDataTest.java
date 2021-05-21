@@ -8,9 +8,12 @@ public class RedisDataTest {
     public RedisDataTest() {
         RedisManager.init();
 
+        long millis = System.currentTimeMillis();
         RedisDataManager<TestDocument> redisDataManager = new RedisDataManager<>();
 
         redisDataManager.addData(new TestDocument());
+        //redisDataManager.saveAll();
+        throw new IllegalStateException((System.currentTimeMillis()-millis) + "ms");
     }
 
     private static class TestDocument extends RedisDocument {
