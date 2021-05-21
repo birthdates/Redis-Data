@@ -27,6 +27,6 @@ You can serialize & deserialize specific fields differently by overriding `deser
 <dependency>
     <groupId>com.birthdates</groupId>
     <artifactId>redis-data</artifactId>
-    <version>1.0.5</version>
+    <version>1.0.6</version>
 </dependency>
 ```
