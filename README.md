@@ -8,6 +8,15 @@ For an example see [here](https://github.com/birthdates/Framework/tree/master/sr
 # Data Structure
 Each document being saved is of type `RedisDocument` (which can be managed with `RedisDataManager`)
 
+# Document
+The `RedisDocument` alone is abstract, so you will have to implement a few functions:
+```java
+    public abstract String getNamespace();
+    public abstract String getId();
+    public abstract Class<?> getType();
+```
+The class comes with two data functions `save` & `load`. When you load a document you can check if it's new with `isNew()`
+
 # Maven
 ```xml
 <dependency>

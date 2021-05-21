@@ -17,7 +17,8 @@ public abstract class RedisDocument {
     @Getter
     private boolean isNew;
 
-    public abstract void onLoaded();
+    public void onLoaded() {
+    }
 
     public abstract String getNamespace();
 
