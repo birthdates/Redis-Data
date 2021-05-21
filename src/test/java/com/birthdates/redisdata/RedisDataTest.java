@@ -16,11 +16,12 @@ public class RedisDataTest {
 
     private static class TestDocument extends RedisDocument {
 
-        @Override
-        public void onLoaded() { }
-
         public String name = "test_name";
         public int id = 0;
+
+        @Override
+        public void onLoaded() {
+        }
 
         @Override
         public String getNamespace() {
