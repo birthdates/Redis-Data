@@ -8,6 +8,10 @@ For an example see [here](https://github.com/birthdates/Redis-Data/tree/master/s
 # Data Structure
 Each document being saved is of type `RedisDocument` (which can be managed with `RedisDataManager`)
 
+Data is read from reflection hence below you are implementing `getType`
+
+To skip a field from being read you can mark it `transient`
+
 # Document
 The `RedisDocument` alone is abstract, so you will have to implement a few functions:
 ```java
