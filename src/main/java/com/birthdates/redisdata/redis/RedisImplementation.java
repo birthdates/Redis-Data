@@ -10,6 +10,7 @@ import java.util.List;
 public class RedisImplementation implements AutoCloseable {
 
     private static final List<RedisImplementation> pooledImplementations = new ArrayList<>();
+
     @Getter
     @Setter
     private Jedis jedis;

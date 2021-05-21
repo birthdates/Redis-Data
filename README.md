@@ -22,6 +22,6 @@ The class comes with two data functions `save` & `load`. When you load a documen
 <dependency>
     <groupId>com.birthdates</groupId>
     <artifactId>redis-data</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 </dependency>
 ```

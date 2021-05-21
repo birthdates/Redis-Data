@@ -12,8 +12,8 @@ import java.time.Duration;
 public class RedisManager {
 
     private static RedisManager instance;
-
     private final JedisPool jedisPool;
+
     @Getter
     private final Gson gson;
 
