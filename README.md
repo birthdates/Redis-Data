@@ -15,13 +15,13 @@ public abstract String getNamespace();
 public abstract String getId();
 public abstract Class<?> getType();
 ```
-The class comes with two data functions `save` & `load`. When you load a document you can check if it's new with `isNew()`
+The class comes with four data functions `save`, `load`, `delete` & `expire`. When you load a document you can check if it's new with `isNew()`
 
 # Maven
 ```xml
 <dependency>
     <groupId>com.birthdates</groupId>
     <artifactId>redis-data</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
 </dependency>
 ```
