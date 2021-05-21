@@ -10,8 +10,11 @@ public class RedisDataTest {
 
         RedisDataManager<TestDocument> redisDataManager = new RedisDataManager<>();
 
-        redisDataManager.addData(new TestDocument());
+        TestDocument document = new TestDocument();
+
+        redisDataManager.addData(document);
         redisDataManager.saveAll();
+        document.delete();
     }
 
     private static class TestDocument extends RedisDocument {
