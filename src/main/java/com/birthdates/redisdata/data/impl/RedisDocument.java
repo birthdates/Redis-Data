@@ -26,6 +26,14 @@ public abstract class RedisDocument {
 
     public abstract Class<?> getType();
 
+    public Object serialize(String fieldName, Object obj) {
+        return obj; //return null to skip
+    }
+
+    public Object deserialize(String fieldName, String data) {
+        return data; //return null to skip
+    }
+
     public String getKey() {
         return getNamespace() + ":" + getId();
     }
@@ -46,7 +54,7 @@ public abstract class RedisDocument {
 
     private void loopFields(boolean save, RedisImplementation implementation) {
         Map<String, String> values = save ? null : implementation.getJedis().hgetAll(getKey());
-        if (values != null && values.isEmpty()) {
+        if (values != null && values.isEmpty()) { //if we're saving & there's no data
             isNew = true;
             return;
         }
@@ -61,7 +69,7 @@ public abstract class RedisDocument {
             field.setAccessible(true);
             Object value;
             try {
-                value = values == null ? field.get(this) : values.remove(fieldName);
+                value = values == null ? field.get(this) : values.remove(fieldName); //on save, get field value, else get redis map value
             } catch (IllegalAccessException exception) {
                 exception.printStackTrace();
                 continue;
@@ -85,6 +93,10 @@ public abstract class RedisDocument {
             if (!save && !fieldType.equals(String.class)) {
                 value = RedisManager.getInstance().getGson().fromJson(value.toString(), fieldType);
             }
+
+            value = save ? serialize(fieldName, value) : deserialize(fieldName, value);
+            if(value == null) continue;
+
             if (!save) {
                 try {
                     field.set(this, value);
