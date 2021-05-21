@@ -22,6 +22,6 @@ The class comes with four data functions `save`, `load`, `delete` & `expire`. Wh
 <dependency>
     <groupId>com.birthdates</groupId>
     <artifactId>redis-data</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
 </dependency>
 ```
