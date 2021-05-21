@@ -1,7 +1,8 @@
-package com.birthdates.redisdata.impl;
+package com.birthdates.redisdata.data.impl;
 
 import com.birthdates.redisdata.RedisManager;
 import com.birthdates.redisdata.redis.RedisImplementation;
+import lombok.Getter;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -13,6 +14,8 @@ import java.util.Map;
 
 public abstract class RedisDocument {
 
+    @Getter
+    private boolean isNew;
 
     public abstract void onLoaded();
 
@@ -43,7 +46,8 @@ public abstract class RedisDocument {
     private void loopFields(boolean save, RedisImplementation implementation) {
         Map<String, String> values = save ? null : implementation.getJedis().hgetAll(getKey());
         if (values != null && values.isEmpty()) {
-            throw new IllegalStateException("no data");
+            isNew = true;
+            return;
         }
         List<Field> fields = new ArrayList<>();
         getAllFields(fields, getType());
@@ -89,6 +93,18 @@ public abstract class RedisDocument {
                 continue;
             }
             implementation.getJedis().hset(getKey(), fieldName, RedisManager.getInstance().getGson().toJson(value));
+        }
+    }
+
+    public void delete() {
+        try (RedisImplementation implementation = RedisManager.getInstance().getJedis()) {
+            implementation.getJedis().del(getKey());
+        }
+    }
+
+    public void expire(int milliseconds) {
+        try (RedisImplementation implementation = RedisManager.getInstance().getJedis()) {
+            implementation.getJedis().pexpire(getKey(), milliseconds);
         }
     }
 

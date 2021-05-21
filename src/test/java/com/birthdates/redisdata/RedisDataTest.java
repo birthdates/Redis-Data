@@ -1,6 +1,6 @@
 package com.birthdates.redisdata;
 
-import com.birthdates.redisdata.impl.RedisDocument;
+import com.birthdates.redisdata.data.impl.RedisDocument;
 
 public class RedisDataTest {
 
@@ -15,8 +15,7 @@ public class RedisDataTest {
     private static class TestDocument extends RedisDocument {
 
         @Override
-        public void onLoaded() {
-        }
+        public void onLoaded() { }
 
         public String name = "test_name";
         public int id = 0;
