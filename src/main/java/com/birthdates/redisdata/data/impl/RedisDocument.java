@@ -59,7 +59,7 @@ public abstract class RedisDocument {
             return;
         }
         List<Field> fields = new ArrayList<>();
-        getAllFields(fields, getType());
+        getAllFields(fields, getType()); //get all fields from super classes
 
         for (Field field : fields) {
             if (field == null || Modifier.isTransient(field.getModifiers())) continue;
@@ -95,7 +95,7 @@ public abstract class RedisDocument {
             }
 
             value = save ? serialize(fieldName, value) : deserialize(fieldName, value.toString());
-            if(value == null) continue;
+            if (value == null) continue;
 
             if (!save) {
                 try {
