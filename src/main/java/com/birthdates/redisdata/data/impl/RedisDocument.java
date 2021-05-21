@@ -94,7 +94,7 @@ public abstract class RedisDocument {
                 value = RedisManager.getInstance().getGson().fromJson(value.toString(), fieldType);
             }
 
-            value = save ? serialize(fieldName, value) : deserialize(fieldName, value);
+            value = save ? serialize(fieldName, value) : deserialize(fieldName, value.toString());
             if(value == null) continue;
 
             if (!save) {
