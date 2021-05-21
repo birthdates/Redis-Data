@@ -22,6 +22,10 @@ public abstract class RedisDocument {
 
     public abstract Class<?> getType();
 
+    public String getKey() {
+        return getNamespace() + ":" + getId();
+    }
+
     public void load() {
         try (RedisImplementation implementation = RedisManager.getInstance().getJedis()) {
             loopFields(false, implementation);
@@ -37,16 +41,22 @@ public abstract class RedisDocument {
     }
 
     private void loopFields(boolean save, RedisImplementation implementation) {
-        Map<String, String> values = save ? null : implementation.getJedis().hgetAll(getId());
+        Map<String, String> values = save ? null : implementation.getJedis().hgetAll(getKey());
+        if (values != null && values.isEmpty()) {
+            throw new IllegalStateException("no data");
+        }
         List<Field> fields = new ArrayList<>();
         getAllFields(fields, getType());
 
         for (Field field : fields) {
-            if (Modifier.isTransient(field.getModifiers())) continue;
+            if (field == null || Modifier.isTransient(field.getModifiers())) continue;
 
+            String fieldName = field.getName();
+
+            field.setAccessible(true);
             Object value;
             try {
-                value = save ? field.get(this) : values.remove(field.getName());
+                value = values == null ? field.get(this) : values.remove(fieldName);
             } catch (IllegalAccessException exception) {
                 exception.printStackTrace();
                 continue;
@@ -67,10 +77,9 @@ public abstract class RedisDocument {
                 }
             }
 
-            if (!fieldType.equals(String.class)) {
+            if (!save && !fieldType.equals(String.class)) {
                 value = RedisManager.getInstance().getGson().fromJson(value.toString(), fieldType);
             }
-            field.setAccessible(true);
             if (!save) {
                 try {
                     field.set(this, value);
@@ -79,7 +88,7 @@ public abstract class RedisDocument {
                 }
                 continue;
             }
-            implementation.getJedis().hset(getNamespace() + ":" + getId(), field.getName(), RedisManager.getInstance().getGson().toJson(value));
+            implementation.getJedis().hset(getKey(), fieldName, RedisManager.getInstance().getGson().toJson(value));
         }
     }
 

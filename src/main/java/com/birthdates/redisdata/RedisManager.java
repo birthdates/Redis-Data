@@ -18,9 +18,15 @@ public class RedisManager {
     private final Gson gson;
 
     public RedisManager() {
-        instance = this;
         jedisPool = new JedisPool(getPoolConfig());
         gson = new Gson();
+    }
+
+    public static void init() {
+        if (instance != null) {
+            throw new IllegalStateException("RedisManager already initialized!");
+        }
+        instance = new RedisManager();
     }
 
     public static RedisManager getInstance() {
