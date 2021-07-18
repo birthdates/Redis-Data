@@ -15,7 +15,7 @@ import java.util.Map;
 public abstract class RedisDocument {
 
     @Getter
-    private boolean isNew;
+    private transient boolean isNew;
 
     public void onLoaded() {
     }
@@ -30,7 +30,7 @@ public abstract class RedisDocument {
         return obj; //return null to skip
     }
 
-    public Object deserialize(String fieldName, String data) {
+    public Object deserialize(String fieldName, Object data) {
         return data; //return null to skip
     }
 
@@ -49,6 +49,7 @@ public abstract class RedisDocument {
     public void save() {
         try (RedisImplementation implementation = RedisManager.getInstance().getJedis()) {
             loopFields(true, implementation);
+            implementation.getJedis().sadd(getNamespace(), getId());
         }
     }
 
@@ -90,12 +91,12 @@ public abstract class RedisDocument {
                 }
             }
 
-            if (!save && !fieldType.equals(String.class)) {
+            if (!save) {
                 value = RedisManager.getInstance().getGson().fromJson(value.toString(), fieldType);
             }
 
-            value = save ? serialize(fieldName, value) : deserialize(fieldName, value.toString());
-            if (value == null) continue;
+            value = save ? serialize(fieldName, value) : deserialize(fieldName, value);
+            if (value == null) continue; //if we've decided to skip this field
 
             if (!save) {
                 try {
@@ -110,8 +111,11 @@ public abstract class RedisDocument {
     }
 
     public void delete() {
+        String key = getKey();
+        String id = getId();
         try (RedisImplementation implementation = RedisManager.getInstance().getJedis()) {
-            implementation.getJedis().del(getKey());
+            implementation.getJedis().del(key);
+            implementation.getJedis().srem(getNamespace(), id);
         }
     }
 

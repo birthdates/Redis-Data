@@ -18,9 +18,11 @@ public class RedisImplementation implements AutoCloseable {
 
     public static RedisImplementation get(Jedis jedis) {
         RedisImplementation implementation;
-        if (!pooledImplementations.isEmpty()) {
-            implementation = pooledImplementations.remove(0);
-        } else implementation = new RedisImplementation();
+        synchronized (pooledImplementations) {
+            if (!pooledImplementations.isEmpty()) {
+                implementation = pooledImplementations.remove(0);
+            } else implementation = new RedisImplementation();
+        }
         implementation.setJedis(jedis);
         return implementation;
     }
@@ -30,7 +32,9 @@ public class RedisImplementation implements AutoCloseable {
         jedis.disconnect();
         jedis.close();
 
-        if (pooledImplementations.isEmpty())
-            pooledImplementations.add(this);
+        synchronized (pooledImplementations) {
+            if (pooledImplementations.isEmpty())
+                pooledImplementations.add(this);
+        }
     }
 }

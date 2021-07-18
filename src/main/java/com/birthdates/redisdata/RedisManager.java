@@ -18,19 +18,26 @@ public class RedisManager {
     private final Gson gson;
 
     public RedisManager() {
-        this(null);
+        this(null, "localhost", 6379, 0, null, null);
     }
 
-    public RedisManager(JedisPoolConfig poolConfig) {
-        jedisPool = new JedisPool(poolConfig == null ? defaultPoolConfig() : poolConfig);
+    public RedisManager(JedisPoolConfig poolConfig, String host, int port, int database, String username, String password) {
+        if (username == null || password == null) {
+            jedisPool = new JedisPool(poolConfig == null ? defaultPoolConfig() : poolConfig, host, port, 2000, null, database);
+        } else
+            jedisPool = new JedisPool(poolConfig == null ? defaultPoolConfig() : poolConfig, host, port, 2000, username, password, database);
         gson = new Gson();
     }
 
     public static void init() {
+        init(null, "localhost", 0, 6379, null, null);
+    }
+
+    public static void init(JedisPoolConfig jedisPoolConfig, String host, int database, int port, String username, String password) {
         if (instance != null) {
             throw new IllegalStateException("RedisManager already initialized!");
         }
-        instance = new RedisManager();
+        instance = new RedisManager(jedisPoolConfig, host, port, database, username, password);
     }
 
     public static RedisManager getInstance() {
