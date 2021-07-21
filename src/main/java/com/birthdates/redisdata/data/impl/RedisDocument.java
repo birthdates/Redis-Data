@@ -4,11 +4,13 @@ import com.birthdates.redisdata.RedisManager;
 import com.birthdates.redisdata.redis.RedisImplementation;
 import lombok.Getter;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -51,6 +53,73 @@ public abstract class RedisDocument {
             loopFields(true, implementation);
             implementation.getJedis().sadd(getNamespace(), getId());
         }
+    }
+
+    public void applyTo(RedisDocument document) {
+        List<Field> fields = new ArrayList<>();
+        getAllFields(fields, getType()); //get all fields from super classes
+
+        for (Field field : fields) {
+            Field otherField;
+            try {
+                otherField = document.getClass().getDeclaredField(field.getName());
+            } catch(NoSuchFieldException ignored) {
+                continue;
+            }
+
+            if (!field.getType().equals(otherField.getType()))
+                continue;
+
+            field.setAccessible(true);
+            otherField.setAccessible(true);
+
+            Object value;
+            Object otherValue;
+            try {
+                value = field.get(this);
+                otherValue = otherField.get(this);
+            } catch(IllegalAccessException exception) {
+                exception.printStackTrace();
+                continue;
+            }
+
+            if (value.equals(otherValue))
+                continue;
+
+            if (value instanceof Collection<?>) {
+                Collection collection = (Collection<?>) value;
+                Collection otherCollection = (Collection<?>) otherValue;
+                otherCollection.clear();
+                otherCollection.addAll(collection);
+                continue;
+            }
+
+
+            try {
+                otherField.set(document, value);
+            } catch(IllegalAccessException exception) {
+                exception.printStackTrace();
+            }
+        }
+    }
+
+    public <T extends RedisDocument> T clone(Class<T> type) {
+        Constructor<T> constructor;
+        try {
+            constructor = type.getConstructor(String.class);
+        } catch(NoSuchMethodException exception) {
+            exception.printStackTrace();
+            return null;
+        }
+        T newObj;
+        try {
+            newObj = constructor.newInstance(getId());
+        } catch(InstantiationException | IllegalAccessException | InvocationTargetException exception) {
+            exception.printStackTrace();
+            return null;
+        }
+        applyTo(newObj);
+        return newObj;
     }
 
     private void loopFields(boolean save, RedisImplementation implementation) {
